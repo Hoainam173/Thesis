@@ -46,7 +46,7 @@ def calibrate_camera(chessboard_dir, board_size=(9,6), square_size_mm=5):
     objpoints, imgpoints = [], []
     images = glob.glob(os.path.join(chessboard_dir,"*.jpg")) + glob.glob(os.path.join(chessboard_dir,"*.png"))
     if not images:
-        print("⚠️ Không tìm thấy ảnh chessboard. Dùng SCALE_MM_PER_PX mặc định 0.1 mm/pixel")
+        print("Không tìm thấy ảnh chessboard. Dùng SCALE_MM_PER_PX mặc định 0.1 mm/pixel")
         return None, None, 0.1
 
     for fname in images:
@@ -65,7 +65,7 @@ def calibrate_camera(chessboard_dir, board_size=(9,6), square_size_mm=5):
     cv2.destroyAllWindows()
 
     if len(objpoints) < 2:
-        print("⚠️ Không đủ ảnh chessboard hợp lệ! Dùng SCALE_MM_PER_PX = 0.1 mm/pixel")
+        print("Không đủ ảnh chessboard hợp lệ! Dùng SCALE_MM_PER_PX = 0.1 mm/pixel")
         return None, None, 0.1
 
     ret, camera_matrix, dist_coeffs, _, _ = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
@@ -105,7 +105,7 @@ canvas.get_tk_widget().pack(pady=10)
 capture_index = 0
 avg_diameters_per_capture = []
 
-# HÀM CẬP NHẬT GUI ==================
+# HÀM CẬP NHẬT GUI 
 def update_gui(avg_dia, min_dia, max_dia, count):
     global capture_index, avg_diameters_per_capture
     avg_label.config(text=f"Độ dày trung bình: {avg_dia:.3f} mm")
@@ -205,7 +205,7 @@ def fiber_measure_loop():
                 try:
                     df.to_csv(LOG_FILE, mode='a', index=False, header=not header_exists)
                 except PermissionError:
-                    print("⚠️ Không thể ghi CSV, file đang mở!")
+                    print(" Không thể ghi CSV, file đang mở!")
 
             print(f"[{timestamp}] Đã lưu {len(data)} sợi hợp lệ.")
             cv2.imshow("Fiber Presentation",presentation)
