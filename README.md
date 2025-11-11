@@ -153,6 +153,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
-✅ **Optional Enhancement:** You can embed example images or GIFs from your GUI and histogram updates at the top of the README to make it visually engaging.
 
 
