@@ -9,12 +9,12 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 
-# ===================== THƯ MỤC LƯU =====================
+# THƯ MỤC LƯU 
 SAVE_DIR = "fiber_diameter"
 os.makedirs(SAVE_DIR, exist_ok=True)
 LOG_FILE = os.path.join(SAVE_DIR, "fiber_measurements.csv")
 
-# ===================== CAMERA =====================
+# CAMERA 
 cap = cv2.VideoCapture(1)
 if not cap.isOpened():
     print("Không mở được camera Rapoo. Kiểm tra kết nối USB.")
@@ -22,7 +22,7 @@ if not cap.isOpened():
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-# ===================== HIỆU CHUẨN CAMERA BẰNG CHESSBOARD =====================
+# HIỆU CHUẨN CAMERA BẰNG CHESSBOARD 
 CHESSBOARD_DIR = "chessboard_images"
 CHESSBOARD_SIZE = (9,6)   # số góc bên trong
 SQUARE_SIZE_MM = 5        # mm
@@ -50,8 +50,8 @@ def calibrate_camera(chessboard_dir, board_size=(9,6), square_size_mm=5):
             cv2.waitKey(100)
     cv2.destroyAllWindows()
 
-    if len(objpoints) < 5:
-        print("⚠️ Không đủ ảnh chessboard hợp lệ! Sử dụng SCALE_MM_PER_PX mặc định 0.1mm/pixel.")
+    if len(objpoints) < 2:
+        print("Không đủ ảnh chessboard hợp lệ! Sử dụng SCALE_MM_PER_PX mặc định 0.1mm/pixel.")
         return None, None, 0.1  # mm/pixel mặc định
 
     ret, mtx, dist, _, _ = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
@@ -63,12 +63,12 @@ def calibrate_camera(chessboard_dir, board_size=(9,6), square_size_mm=5):
 
 camera_matrix, dist_coeffs, SCALE_MM_PER_PX = calibrate_camera(CHESSBOARD_DIR, CHESSBOARD_SIZE, SQUARE_SIZE_MM)
 
-# ===================== ĐIỀU KIỆN LỌC SỢI =====================
+# ĐIỀU KIỆN LỌC SỢI 
 MIN_LENGTH_MM = 100.0
 MAX_DIAMETER_MM = 5.0
 MIN_AREA_PX = 200
 
-# ===================== GUI BÁO CÁO =====================
+# GUI BÁO CÁO 
 root = tk.Tk()
 root.title("Fiber Quality Diagnosis")
 root.geometry("480x250")
@@ -100,17 +100,17 @@ def update_gui(avg_dia, min_dia, max_dia, count):
 
     deviation = max_dia - min_dia
     if deviation < 0.5:
-        text = "✅ Sợi đồng đều, đạt chuẩn chất lượng."
+        text = "Sợi đồng đều, đạt chuẩn chất lượng."
         color = "green"
     elif deviation < 1.0:
-        text = "⚠️ Sợi tương đối ổn định."
+        text = "Sợi tương đối ổn định."
         color = "orange"
     else:
-        text = "❌ Sợi dao động lớn – cần kiểm tra máy kéo."
+        text = "Sợi dao động lớn – cần kiểm tra máy kéo."
         color = "red"
     quality_label.config(text=text, foreground=color)
 
-# ===================== HÀM XỬ LÝ ẢNH =====================
+# HÀM XỬ LÝ ẢNH 
 def process_fibers(frame):
     if camera_matrix is not None:
         frame = cv2.undistort(frame, camera_matrix, dist_coeffs)
@@ -151,7 +151,7 @@ def process_fibers(frame):
                     (x,y-10), cv2.FONT_HERSHEY_SIMPLEX,0.6,(0,0,255),2)
     return thresh, presentation, fibers_data
 
-# ===================== VÒNG LẶP CHÍNH TRONG THREAD RIÊNG =====================
+# VÒNG LẶP CHÍNH TRONG THREAD RIÊNG 
 def fiber_measure_loop():
     try:
         while True:
@@ -202,8 +202,7 @@ def fiber_measure_loop():
         cap.release()
         cv2.destroyAllWindows()
 
-# ===================== KHỞI ĐỘNG THREAD =====================
+# KHỞI ĐỘNG THREAD 
 threading.Thread(target=fiber_measure_loop, daemon=True).start()
 
-# ===================== CHẠY TKINTER MAINLOOP TRÊN THREAD CHÍNH =====================
 root.mainloop()
